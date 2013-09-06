@@ -74,14 +74,19 @@ def get_config(config_path=GLOB_SETTINGS_PATH):
 		}, config_path)	# TODO: figure out some sane default values
 	with unicode_open(config_path) as file_handle:
 		global_config = _json_parse(file_handle.read(), object_pairs_hook=OrderedDict)
+        logging.debug(
+            "Global config read from {0} is {1}".format(config_path, global_config)
+        )
 
 	return global_config
 
 def create_config(params, path=GLOB_SETTINGS_PATH):
-	"""
-	Create a new config file at `path` with the default values defined in
-	`params`.
-	"""
-	params['template_dirs'] = ',\n'.join(params['template_dirs'])
-	with unicode_open(path, 'w') as file_handle:
-		file_handle.write(DEFAULT_SETTINGS.format(**params))
+    """
+    Create a new config file at `path` with the default values defined in
+    `params`.
+    """
+
+    logging.debug("Creating a new config file at {0}".format(path))
+    params['template_dirs'] = ',\n'.join(params['template_dirs'])
+    with unicode_open(path, 'w') as file_handle:
+        file_handle.write(DEFAULT_SETTINGS.format(**params))
