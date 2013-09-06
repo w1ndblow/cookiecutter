@@ -175,8 +175,8 @@ class TestOutputFolder(unittest.TestCase):
         )
 
         something = """Hi!
-My name is Audrey Greenfeld.
-It is 2014."""
+My color is green.
+My letter is D."""
         something2 = open('output_folder/something.txt').read()
         self.assertEqual(something, something2)
 
