@@ -156,8 +156,10 @@ class TestGenerateFiles(unittest.TestCase):
 class TestGenerateContext(unittest.TestCase):
 
     def test_generate_context(self):
-        context = generate.generate_context(config_file='tests/json/test.json')
-        self.assertEqual(context, {"test": {"1": 2}})
+        context = generate.generate_context(
+            config_file='tests/test-generate-context/cookiecutter.json'
+        )
+        self.assertEqual(context["cookiecutter"]["1"],  2)
 
 
 class TestOutputFolder(unittest.TestCase):

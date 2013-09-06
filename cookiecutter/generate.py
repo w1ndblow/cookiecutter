@@ -44,17 +44,21 @@ def generate_context(config_file='cookiecutter.json'):
 
     context = {}
     settings = get_config()
+    logging.debug("settings is {0}".format(settings))
+    logging.debug("settings['default_context'] before is {0}".format(settings['default_context']))
 
     file_handle = open(config_file)
     obj = json.load(file_handle, encoding='utf-8', object_pairs_hook=OrderedDict)
 
-    # Merge local template settings with the global ones
-    settings['default_context'].update(obj)
+    # Overwrite context variable defaults with the default context from the
+    # global config, if available
+    if settings:
+        obj.update(settings['default_context'])
 
     # Add the Python object to the context dictionary
     file_name = os.path.split(config_file)[1]
     file_stem = file_name.split('.')[0]
-    context[file_stem] = settings['default_context']
+    context[file_stem] = obj
 
     logging.debug('Context generated is {0}'.format(context))
     return context

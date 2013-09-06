@@ -26,59 +26,54 @@ GLOB_SETTINGS_PATH = os.path.expanduser('~/.cookiecutterrc')
 
 DEFAULT_SETTINGS = \
 """{{
-	# foo
-	"template_dirs": [
-		{template_dirs}
-	],
-	"default_context": {{
-		"full_name": {full_name}
-		"email": {email}
-		"github_username": {github_username}
-	}}
+    # foo
+    "template_dirs": [
+        {template_dirs}
+    ],
+    "default_context": {{
+        "full_name": {full_name}
+        "email": {email}
+        "github_username": {github_username}
+    }}
 }}"""
 
 # JSON helpers
 
 def _json_parse(json_string, comment_char='#', *args, **kwargs):
-	"""
-	Remove any line begining with `comment_char` from `json_string`,
-	and return a json object from it.
-	*args & **kwargs will be passed to json.loads.
-	"""
-	lines = json_string.split('\n')
-	for l in lines:
-		if l.strip().startswith(comment_char):
-			logging.debug("Ignoring config comment: %s" % l)
-			lines.remove(l)
-	return json.loads(''.join(lines), *args, **kwargs)
+    """
+    Remove any line begining with `comment_char` from `json_string`,
+    and return a json object from it.
+    *args & **kwargs will be passed to json.loads.
+    """
+    lines = json_string.split('\n')
+    for l in lines:
+        if l.strip().startswith(comment_char):
+            logging.debug("Ignoring config comment: %s" % l)
+            lines.remove(l)
+    return json.loads(''.join(lines), *args, **kwargs)
 
 def _json_open(json_path, *args, **kwargs):
-	"""
-	Open a json file containing comments (see _json_parse).
-	"""
-	with unicode_open(json_path) as fh:
-		obj = _json_parse(fh.read(), *args, **kwargs)
-	return obj
+    """
+    Open a json file containing comments (see _json_parse).
+    """
+    with unicode_open(json_path) as fh:
+        obj = _json_parse(fh.read(), *args, **kwargs)
+    return obj
 
 
 def get_config(config_path=GLOB_SETTINGS_PATH):
-	"""
-	Retrieve the global settings and return them.
-	"""
-	if not os.path.exists(config_path):
-		return create_config({
-			'template_dirs': [],
-			'full_name': '',
-			'email': '',
-			'github_username': ''	
-		}, config_path)	# TODO: figure out some sane default values
-	with unicode_open(config_path) as file_handle:
-		global_config = _json_parse(file_handle.read(), object_pairs_hook=OrderedDict)
+    """
+    Retrieve the global settings and return them.
+    """
+    if not os.path.exists(config_path):
+        return None
+    with unicode_open(config_path) as file_handle:
+        global_config = _json_parse(file_handle.read(), object_pairs_hook=OrderedDict)
         logging.debug(
             "Global config read from {0} is {1}".format(config_path, global_config)
         )
 
-	return global_config
+    return global_config
 
 def create_config(params, path=GLOB_SETTINGS_PATH):
     """
