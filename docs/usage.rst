@@ -44,20 +44,6 @@ defined in the project's `cookiecutter.json`.
 Then, Cookiecutter will generate a project from the template, using the values
 that you entered. It will be placed in your current directory.
 
-Or hook directly into the Cookiecutter API
-------------------------------------------
+And if you want to specify a branch you can do that with::
 
-You can use Cookiecutter from Python::
-
-    from cookiecutter.main import cookiecutter
-    
-    # Create project from the cookiecutter-pypackage/ template
-    cookiecutter('cookiecutter-pypackage/')
-
-    # Create project from the cookiecutter-pypackage.git repo template
-    cookiecutter('https://github.com/audreyr/cookiecutter-pypackage.git')
-    
-See the :ref:`API Reference` for more details.
-
-If you use it in an interesting way, I'd love to hear about it: file an issue,
-please!
+    $ cookiecutter https://github.com/audreyr/cookiecutter-pypackage.git --checkout develop
