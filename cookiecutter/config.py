@@ -22,7 +22,7 @@ else:
 from .utils import unicode_open
 
 # TODO: test on windows...
-GLOB_SETTINGS_PATH = os.path.expanduser('~/.cookiecutter')
+GLOB_SETTINGS_PATH = os.path.expanduser('~/.cookiecutterrc')
 
 DEFAULT_SETTINGS = \
 """{{
