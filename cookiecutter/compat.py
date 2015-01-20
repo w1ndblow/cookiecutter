@@ -142,6 +142,7 @@ else:  # Forced testing
                         return name
         return None
 
+
 def is_string(obj):
     """Determine if an object is a string."""
     return isinstance(obj, str if PY3 else basestring)
