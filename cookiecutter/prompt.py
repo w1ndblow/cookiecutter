@@ -192,7 +192,9 @@ def prompt_for_config(context, no_input=False):
         elif key.startswith('__'):
             cookiecutter_dict[key] = render_variable(env, raw, cookiecutter_dict)
             continue
-
+        if key in context['cookiecutter'].get('_generate',{}).keys():
+            cookiecutter_dict[key] = raw
+            continue
         try:
             if isinstance(raw, list):
                 # We are dealing with a choice variable

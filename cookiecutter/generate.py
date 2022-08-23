@@ -5,6 +5,9 @@ import logging
 import os
 import shutil
 import warnings
+import uuid
+import random
+import string
 from collections import OrderedDict
 from pathlib import Path
 from binaryornot.check import is_binary
@@ -108,6 +111,9 @@ def generate_context(
     # Add the Python object to the context dictionary
     file_name = os.path.split(context_file)[1]
     file_stem = file_name.split('.')[0]
+    if obj.get('_generate', None):
+        for key, value in obj['_generate'].items():
+            obj[key]=generate_object(value.split(','))
     context[file_stem] = obj
 
     # Overwrite context variable defaults with the default context from the
@@ -267,6 +273,18 @@ def _run_hook_from_repo_dir(
                 hook_name,
             )
             raise
+
+def generate_object(opt_string):
+    obj = { 
+        "type": opt_string[0],
+        "len": int(opt_string[1]) if len(opt_string) > 1 else 10
+        }
+    if obj['type'] =='uuid':
+        return str(uuid.uuid4())
+    elif obj['type'] =='string':
+        return ''.join(random.choice(
+                                string.ascii_uppercase + string.digits
+                                ) for _ in range(obj['len']))
 
 
 def generate_files(
