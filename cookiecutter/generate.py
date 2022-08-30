@@ -296,7 +296,7 @@ def generate_object(opt_string, var_name = 'default' -> str ):
         result = ''
         if obj['availability'] == 'public':
             return result
-        else
+        else:
             return result
 
 def generate_files(
