@@ -274,18 +274,30 @@ def _run_hook_from_repo_dir(
             )
             raise
 
-def generate_object(opt_string):
+def generate_object(opt_string, var_name = 'default' -> str ):
     obj = { 
-        "type": opt_string[0],
-        "len": int(opt_string[1]) if len(opt_string) > 1 else 10
+        "type": opt_string[0]
         }
     if obj['type'] =='uuid':
+        obj['without_octets'] = True if len(opt_string) > 1 \
+                                and opt_string[1]=='without_octets' else False
+        if obj['without_octets']:
+            return str(uuid.uuid4()).replace('-','')
         return str(uuid.uuid4())
     elif obj['type'] =='string':
+        obj["len"] = int(opt_string[1]) if len(opt_string) > 1 else 10
         return ''.join(random.choice(
                                 string.ascii_uppercase + string.digits
                                 ) for _ in range(obj['len']))
-
+    elif obj['type']=='ssh-key':
+        obj['availability'] = 'public' if var_name.contains('public') \
+                                else 'private'
+        # cmd to create 
+        result = ''
+        if obj['availability'] == 'public':
+            return result
+        else
+            return result
 
 def generate_files(
     repo_dir,
