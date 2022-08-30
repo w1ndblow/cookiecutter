@@ -8,7 +8,9 @@ import warnings
 import uuid
 import random
 import string
+import base64
 from collections import OrderedDict
+from Crypto.PublicKey import RSA
 from pathlib import Path
 from binaryornot.check import is_binary
 from jinja2 import FileSystemLoader, Environment
@@ -113,7 +115,7 @@ def generate_context(
     file_stem = file_name.split('.')[0]
     if obj.get('_generate', None):
         for key, value in obj['_generate'].items():
-            obj[key]=generate_object(value.split(','))
+            obj[key]=generate_object(value.split(','), key)
     context[file_stem] = obj
 
     # Overwrite context variable defaults with the default context from the
@@ -274,7 +276,7 @@ def _run_hook_from_repo_dir(
             )
             raise
 
-def generate_object(opt_string, var_name = 'default' -> str ):
+def generate_object(opt_string: list, var_name = 'default'):
     obj = { 
         "type": opt_string[0]
         }
@@ -283,21 +285,43 @@ def generate_object(opt_string, var_name = 'default' -> str ):
                                 and opt_string[1]=='without_octets' else False
         if obj['without_octets']:
             return str(uuid.uuid4()).replace('-','')
+        
         return str(uuid.uuid4())
     elif obj['type'] =='string':
         obj["len"] = int(opt_string[1]) if len(opt_string) > 1 else 10
-        return ''.join(random.choice(
-                                string.ascii_uppercase + string.digits
+        obj["special"] = True if len(opt_string) > 2 \
+                                and opt_string[2]=='special' else False
+        obj['base64'] = True if len(opt_string) > 3 \
+                                and opt_string[3]=='base64' else False
+        char_set = string.ascii_uppercase + string.digits
+        if obj['special']:
+            char_set += string.punctuation
+
+        result = ''.join(random.choice(
+                                char_set
                                 ) for _ in range(obj['len']))
+        if obj['base64']:
+            return base64.encode(result)
+        return result
     elif obj['type']=='ssh-key':
-        obj['availability'] = 'public' if var_name.contains('public') \
+        obj['availability'] = 'public' if 'public' in var_name \
                                 else 'private'
-        # cmd to create 
-        result = ''
-        if obj['availability'] == 'public':
-            return result
-        else:
-            return result
+        keyfile_name = var_name.replace('public','').replace('private','')
+        key = RSA.generate(2048)
+        if not os.path.exists('/tmp/{}_private.key'.format(
+            keyfile_name
+        )):
+            with open("/tmp/{}_private.key".format(keyfile_name),
+                'wb') as content_file:
+                #os.chmod("/tmp/private.key", 0600)
+                content_file.write(key.exportKey('PEM'))
+            pubkey = key.publickey()
+            with open("/tmp/{}_public.key".format(keyfile_name), 
+                'wb') as content_file:
+                content_file.write(pubkey.exportKey('OpenSSH'))     
+       
+        with open("/tmp/{}_{}.key".format(keyfile_name, obj['availability'])) as content_file:
+            return str(content_file.read())
 
 def generate_files(
     repo_dir,
