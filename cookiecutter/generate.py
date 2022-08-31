@@ -307,6 +307,7 @@ def generate_object(opt_string: list, var_name = 'default'):
         obj['availability'] = 'public' if 'public' in var_name \
                                 else 'private'
         keyfile_name = var_name.replace('public','').replace('private','')
+        logger.debug('Create files with name: {}'.format(keyfile_name))
         key = RSA.generate(2048)
         if not os.path.exists('/tmp/{}_private.key'.format(
             keyfile_name
